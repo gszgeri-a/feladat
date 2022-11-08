@@ -166,35 +166,22 @@ import os
 
 
 from tkinter import *
- 
-# Create Object
-root = Tk()
- 
-# Set title
-root.title("Main Window")
- 
-# Set Geometry
-root.geometry("200x200")
- 
-# Open New Window
-def launch():
-    global second
-    second = Toplevel()
-    second.title("Child Window")
-    second.geometry("400x400")
- 
-# Show the window
-def show():
-    second.deiconify()
- 
-# Hide the window
-def hide():
-    second.withdraw()
- 
-# Add Buttons
-Button(root, text="launch Window", command=launch).pack(pady=10)
-Button(root, text="Show", command=show).pack(pady=10)
-Button(root, text="Hide", command=hide).pack(pady=10)
- 
-# Execute Tkinter
-root.mainloop()
+from tkinter import ttk
+
+# Create an instance of tkinter frame or window
+win = Tk()
+
+# Set the size of the window
+win.geometry("700x350")
+
+# Define a function to make the window above
+def lift_window():
+   win.lift()
+   win.after(10000, lift_window)
+
+# Add A label widget
+Label(win, text="Hey Folks, Welcome to TutorialsPoint✨", font=('Aerial 18 italic')).place(x=130, y=150)
+
+lift_window()
+
+win.mainloop()

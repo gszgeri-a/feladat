@@ -6,7 +6,10 @@ conn = pymysql.connect(user='sql7545459', password='1lEUskSrmn',
 
 curs = conn.cursor()
 
-curs.execute("CREATE TABLE users (felhasznalonev TEXT, jelszo TEXT)")
+#curs.execute("DROP TABLE users")
+
+
+#curs.execute("CREATE TABLE users (felhasznalonev TEXT, jelszo TEXT)")
 print("Sikeres")
 
 conn.close()    

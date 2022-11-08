@@ -66,6 +66,11 @@ sign_button = PhotoImage(file="signbtnteszt.png")
 sign_backbtn = PhotoImage(file="signback.png")
 
 
+taskbarbg_img = PhotoImage(file="taskbarbg.png")
+
+
+
+
 def emptyFunction(cucc):
     emptyroot = Toplevel(cucc)
     emptyroot.geometry("300x67")
@@ -137,8 +142,13 @@ def login():
             invalid()
 
 def register():
+    
+    
     def succ():
-
+        def geciszar():
+            sucroot.destroy()
+            signroot.destroy()
+            loginroot.deiconify()
         sucroot = Toplevel(signroot)
         sucroot.geometry("300x67")
         x = loginroot.winfo_x()
@@ -152,10 +162,9 @@ def register():
 
 
         suc_frame_label = Label(sucroot, border=0,bg="grey",image=sign_suc)
-
         suc_frame_label.pack(fill=BOTH,expand=True)
+        sucroot.after(1000,lambda: geciszar())
 
-        sucroot.after(4000,lambda: sucroot.destroy(),signroot.destroy(),loginroot.deiconify())
         try:
             regusername.delete(0,END)
             regpassword.delete(0,END)
@@ -163,7 +172,7 @@ def register():
         except:
             pass
         sucroot.mainloop()
-        
+
 
 
     def sign_up():
@@ -186,6 +195,9 @@ def register():
                 curs.execute(adat, valtozok)
                 conn.commit()
             succ()
+
+                    
+                    
                 
     def move_sgn(e):
         signroot.geometry(f'+{e.x_root}+{e.y_root}')
@@ -250,14 +262,16 @@ frame_label.pack(fill=BOTH,expand=True)
 
 
 
+taskbarlabel = Label(loginroot, image=taskbarbg_img, border=0)
 
+taskbarlabel.place(x=696,y=8)
 exit_button = Button(loginroot, image=exit_photo,border=0)
 
-exit_button.place(x=750,y=10)
+exit_button.place(x=745,y=14)
 
 min_label = Label(loginroot, image=min_btn,border=0)
 
-min_label.place(x=698,y=10)
+min_label.place(x=701,y=14)
 
 
 
@@ -281,11 +295,8 @@ Label(loginroot,text="Password:",bg="white",font=("inter 15")).place(x=395,y=173
 
 
 login_button = Button(loginroot,image=login_btn,borderwidth=0, command=login)
-
 login_button.place(x=513,y=231)
-
 signup_button = Button(loginroot,image=sign_btn,borderwidth=0,command=register)
-
 signup_button.place(x=548,y=317)
 
 
