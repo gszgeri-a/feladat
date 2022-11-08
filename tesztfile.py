@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from ctypes import windll
 
-
+"""
 def set_appwindow():
     global hasstyle
     GWL_EXSTYLE=-20
@@ -156,7 +156,38 @@ minimize_btn.pack(side=tk.RIGHT)
 window.pack(fill='both', expand=True, side=tk.TOP)
 move_window_bindings(status=True)
 
+"""
 
 
+import os
 
 
+#os.makedirs("teszt")
+
+from tkinter import *
+
+root = Tk()
+
+root.geometry("300x500")
+
+
+def te():
+    teszt = Toplevel(root)
+    teszt.overrideredirect(1)
+    teszt.wm_attributes("-transparentcolor","grey")
+    teszt.geometry("300x67")
+
+    frame_photo = PhotoImage(file="teszthiba.png")
+
+    frame_label = Label(teszt, border=0,bg="grey",image=frame_photo)
+
+    frame_label.pack(fill=BOTH,expand=True)
+
+
+    teszt.after(4000,lambda: teszt.destroy())
+
+
+a = Button(root,text="as", command=te)
+a.pack()
+
+root.mainloop()
