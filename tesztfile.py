@@ -164,30 +164,37 @@ import os
 
 #os.makedirs("teszt")
 
+
 from tkinter import *
-
+ 
+# Create Object
 root = Tk()
-
-root.geometry("300x500")
-
-
-def te():
-    teszt = Toplevel(root)
-    teszt.overrideredirect(1)
-    teszt.wm_attributes("-transparentcolor","grey")
-    teszt.geometry("300x67")
-
-    frame_photo = PhotoImage(file="teszthiba.png")
-
-    frame_label = Label(teszt, border=0,bg="grey",image=frame_photo)
-
-    frame_label.pack(fill=BOTH,expand=True)
-
-
-    teszt.after(4000,lambda: teszt.destroy())
-
-
-a = Button(root,text="as", command=te)
-a.pack()
-
+ 
+# Set title
+root.title("Main Window")
+ 
+# Set Geometry
+root.geometry("200x200")
+ 
+# Open New Window
+def launch():
+    global second
+    second = Toplevel()
+    second.title("Child Window")
+    second.geometry("400x400")
+ 
+# Show the window
+def show():
+    second.deiconify()
+ 
+# Hide the window
+def hide():
+    second.withdraw()
+ 
+# Add Buttons
+Button(root, text="launch Window", command=launch).pack(pady=10)
+Button(root, text="Show", command=show).pack(pady=10)
+Button(root, text="Hide", command=hide).pack(pady=10)
+ 
+# Execute Tkinter
 root.mainloop()

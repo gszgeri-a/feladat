@@ -1,9 +1,9 @@
 from tkinter import * 
 from tkinter import ttk
 from ctypes import windll
-
+import pymysql
 loginroot = Tk()
-
+aktiv = None
 loginroot.title("Login")
 
 loginroot.overrideredirect(1)
@@ -61,15 +61,44 @@ exit_photo = PhotoImage(file='close.png')
 
 min_btn = PhotoImage(file="min.png")
 
-sign_button = PhotoImage(file="signbtn.png")
+sign_button = PhotoImage(file="signbtnteszt.png")
 
 sign_backbtn = PhotoImage(file="signback.png")
 
+
+def emptyFunction(cucc):
+    emptyroot = Toplevel(cucc)
+    emptyroot.geometry("300x67")
+    x = cucc.winfo_x()
+    y = cucc.winfo_y()
+    emptyroot.geometry("+%d+%d" % (x + 250, y + 10))
+    emptyroot.overrideredirect(1)
+    emptyroot.wm_attributes("-transparentcolor","grey")
+    
+    
+    empty_popup = PhotoImage(file="ureshiba.png")
+
+
+    invalid_frame_label = Label(emptyroot, border=0,bg="grey",image=empty_popup)
+
+    invalid_frame_label.pack(fill=BOTH,expand=True)
+
+    emptyroot.after(4000,lambda: emptyroot.destroy())
+
+    emptyroot.mainloop()
+    
+
+
+
 def invalid():
     invaldroot = Toplevel(loginroot)
+    invaldroot.geometry("300x67")
+    x = loginroot.winfo_x()
+    y = loginroot.winfo_y()
+    invaldroot.geometry("+%d+%d" % (x + 250, y + 10))
     invaldroot.overrideredirect(1)
     invaldroot.wm_attributes("-transparentcolor","grey")
-    invaldroot.geometry("300x67")
+    
     
     inframe_photo = PhotoImage(file="teszthiba.png")
 
@@ -78,6 +107,12 @@ def invalid():
     invalid_frame_label.pack(fill=BOTH,expand=True)
 
     invaldroot.after(4000,lambda: invaldroot.destroy())
+    try:
+        username.delete(0,END)
+        password.delete(0,END)
+    except:
+        pass
+
     invaldroot.mainloop()
     
     
@@ -85,17 +120,83 @@ def login():
     uname = str(username.get())
     pwd = str(password.get())
     if uname == '' or pwd == '':
-        invalid()
+        emptyFunction(loginroot)
+    else:
+        conn = pymysql.connect(host="sql7.freesqldatabase.com",
+                               user="sql7545459",
+                               passwd="1lEUskSrmn",
+                               database="sql7545459"
+                               )
+        cursor = conn.cursor()
+        cursor.execute('SELECT * from users where felhasznalonev="%s" and jelszo="%s"' % (uname, pwd))
+        if cursor.fetchone():
+            loginroot.quit()
+            aktiv = uname
+            print(f"Bejelentkeztél mint: {aktiv}")
+        else:
+            invalid()
 
 def register():
-    
+    def succ():
+
+        sucroot = Toplevel(signroot)
+        sucroot.geometry("300x67")
+        x = loginroot.winfo_x()
+        y = loginroot.winfo_y()
+        sucroot.geometry("+%d+%d" % (x + 250, y + 10))
+        sucroot.overrideredirect(1)
+        sucroot.wm_attributes("-transparentcolor","grey")
+        
+        
+        sign_suc = PhotoImage(file="sgn_suc.png")
+
+
+        suc_frame_label = Label(sucroot, border=0,bg="grey",image=sign_suc)
+
+        suc_frame_label.pack(fill=BOTH,expand=True)
+
+        sucroot.after(4000,lambda: sucroot.destroy(),signroot.destroy(),loginroot.deiconify())
+        try:
+            regusername.delete(0,END)
+            regpassword.delete(0,END)
+            regemail.delete(0,END)
+        except:
+            pass
+        sucroot.mainloop()
+        
+
+
+    def sign_up():
+        felhasz = str(regusername.get())
+        jelszo = str(regpassword.get())
+        mail = str(regemail.get())
+        if felhasz == "" or jelszo == "" or mail == "":
+            emptyFunction(signroot)
+            
+        else:
+            conn = pymysql.connect(host="sql7.freesqldatabase.com",
+                                user="sql7545459",
+                                passwd="1lEUskSrmn",
+                                database="sql7545459"
+                                )
+            with conn:
+                curs = conn.cursor()
+                adat = ("INSERT INTO users (felhasznalonev, jelszo) VALUES (%s, %s)")
+                valtozok = (felhasz, jelszo)
+                curs.execute(adat, valtozok)
+                conn.commit()
+            succ()
+                
     def move_sgn(e):
         signroot.geometry(f'+{e.x_root}+{e.y_root}')
 
     def sgnclose():
         signroot.destroy()
+        loginroot.deiconify()
     def sgnback():
         signroot.destroy()
+        loginroot.deiconify()
+    loginroot.withdraw()
     signroot = Toplevel(loginroot)
     signroot.title("Sign Up")
     
@@ -131,7 +232,7 @@ def register():
     Label(signroot, image=sep_line,border=0).place(x=502,y=227)
     Label(signroot,text="Password:",bg="white",font=("inter 15")).place(x=400,y=203)
     
-    signbutton = Button(signroot,image=sign_button,borderwidth=0)
+    signbutton = Button(signroot,image=sign_button,borderwidth=0,command=sign_up)
     signbutton.place(x=513,y=247)
     
     sign_back_button = Button(signroot,image=sign_backbtn,border=0,command=sgnback)
@@ -150,9 +251,9 @@ frame_label.pack(fill=BOTH,expand=True)
 
 
 
-exit_label = Label(loginroot, image=exit_photo,border=0)
+exit_button = Button(loginroot, image=exit_photo,border=0)
 
-exit_label.place(x=750,y=10)
+exit_button.place(x=750,y=10)
 
 min_label = Label(loginroot, image=min_btn,border=0)
 
@@ -191,7 +292,7 @@ signup_button.place(x=548,y=317)
 
 frame_label.bind("<B1-Motion>",move_app)
 
-exit_label.bind("<Button>",lambda e:close())
+exit_button.bind("<Button>",lambda e:close())
 
 min_label.bind("<Button>",minimize)
 
