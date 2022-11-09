@@ -167,4 +167,30 @@ import os
 import webbrowser
 
 
-webbrowser.open("www.youtube.com")
+#webbrowser.open("www.youtube.com")
+
+
+
+"""
+import requests
+import json
+
+URL = requests.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=HUF")
+data = URL.text
+
+findata = json.loads(data)
+
+print(findata)
+
+
+"""
+
+
+import tkinter as tk
+
+root = tk.Tk()
+test = tk.Label(root, text="Red", bg="red", fg="white")
+test.pack(ipadx=30, ipady=6)
+test = tk.Label(root, text="Purple",bd=0, bg="purple", fg="white")
+test.pack(ipadx=100, ipady=12)
+tk.mainloop()

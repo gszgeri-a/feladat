@@ -2,13 +2,34 @@ from tkinter import *
 from tkinter import ttk
 from ctypes import windll
 import pymysql
+
+GWL_EXSTYLE = -20
+WS_EX_APPWINDOW = 0x00040000
+WS_EX_TOOLWINDOW = 0x00000080
+
+
+def set_appwindow(fasz):
+    hwnd = windll.user32.GetParent(fasz.winfo_id())
+    stylew = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
+    stylew = stylew & ~WS_EX_TOOLWINDOW
+    stylew = stylew | WS_EX_APPWINDOW
+    res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, stylew)
+    fasz.wm_withdraw()
+    fasz.after(10, lambda: fasz.wm_deiconify())
+
+
+
+
 loginroot = Tk()
 aktiv = None
 loginroot.title("Login")
-
+z = 0
 loginroot.overrideredirect(1)
 loginroot.wm_attributes("-transparentcolor","grey")
+loginroot.after(10, lambda: set_appwindow(loginroot))
 
+
+nev = StringVar()
 app_width = 800
 app_height = 400
 screen_width = loginroot.winfo_screenwidth()
@@ -18,20 +39,11 @@ y = (screen_height / 2 ) - (app_height / 2)
 loginroot.geometry(f'{app_width}x{app_height}+{int(x)}+{int(y)}')
 
 
-def set_appwindow():
-    global hasstyle
-    GWL_EXSTYLE=-20
-    WS_EX_APPWINDOW=0x00040000
-    WS_EX_TOOLWINDOW=0x00000080
-    if not hasstyle:
-        hwnd = windll.user32.GetParent(loginroot.winfo_id())
-        style = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
-        style = style & ~WS_EX_TOOLWINDOW
-        style = style | WS_EX_APPWINDOW
-        res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, style)
-        loginroot.withdraw()
-        loginroot.after(10, lambda:loginroot.wm_deiconify())
-        hasstyle=True
+
+
+
+
+
 
 def move_app(e):
     loginroot.geometry(f'+{e.x_root}+{e.y_root}')
@@ -40,10 +52,19 @@ def close():
     loginroot.destroy()
 
 
-def minimize(hide=True):
-    hwnd = windll.user32.GetParent(loginroot.winfo_id())
-    windll.user32.ShowWindow(hwnd, 0 if hide else 6)
+def minimizeGUI():
+    global z
+    loginroot.state('withdrawn')
+    loginroot.overrideredirect(False)
+    loginroot.state('iconic')
+    z = 1
 
+def frameMapped(event=None):
+    global z
+    loginroot.overrideredirect(True)
+    if z == 1:
+        set_appwindow(loginroot)
+        z = 0
 
 
 frame_photo = PhotoImage(file='loginform.png')
@@ -122,6 +143,8 @@ def invalid():
     
     
 def login():
+    global indulhat,nev_label
+    indulhat = False
     uname = str(username.get())
     pwd = str(password.get())
     if uname == '' or pwd == '':
@@ -135,8 +158,10 @@ def login():
         cursor = conn.cursor()
         cursor.execute('SELECT * from users where felhasznalonev="%s" and jelszo="%s"' % (uname, pwd))
         if cursor.fetchone():
-            loginroot.destroy()
             aktiv = uname
+            nev.set(aktiv)
+            loginroot.destroy()
+            indulhat = True
             print(f"Bejelentkeztél mint: {aktiv}")
         else:
             invalid()
@@ -269,7 +294,7 @@ exit_button = Button(loginroot, image=exit_photo,border=0)
 
 exit_button.place(x=745,y=14)
 
-min_label = Label(loginroot, image=min_btn,border=0)
+min_label = Button(loginroot, image=min_btn,border=0,command=minimizeGUI)
 
 min_label.place(x=701,y=14)
 
@@ -305,22 +330,78 @@ frame_label.bind("<B1-Motion>",move_app)
 
 exit_button.bind("<Button>",lambda e:close())
 
-min_label.bind("<Button>",minimize)
 
-
-hasstyle = False
-
-
-loginroot.update_idletasks()
-loginroot.withdraw()
-set_appwindow()
+loginroot.bind("<Map>", frameMapped)
 
 
 loginroot.mainloop()
 
 
+
+
+
+
+
+
+
 mainroot = Tk()
+mainroot.wm_attributes("-transparentcolor","gray")
+mainroot.overrideredirect(1)
 
-mainroot.geometry("300x300")
 
-mainroot.mainloop()
+
+app_width = 900
+app_height = 500
+screen_width = mainroot.winfo_screenwidth()
+screen_height = mainroot.winfo_screenheight()
+x = (screen_width / 2) - (app_width / 2)
+y = (screen_height / 2 ) - (app_height / 2)
+mainroot.geometry(f'{app_width}x{app_height}+{int(x)}+{int(y)}')
+
+mainframe_photo = PhotoImage(file='mainfrom.png')
+
+
+
+#Label(mainroot,text="Welcome,",font=("inter 26")).place(x=113,y=38)
+
+
+taskbarbg_img = PhotoImage(file="taskbarbg.png")
+
+
+exit_photo = PhotoImage(file='close.png')
+
+min_btn = PhotoImage(file="min.png")
+
+mainframe = Label(mainroot, border=0,bg="grey",image=mainframe_photo)
+
+mainframe.pack(fill=BOTH,expand=True)
+
+
+taskbarlabel = Label(mainroot, image=taskbarbg_img, bd=0)
+
+taskbarlabel.pack(fill=BOTH,expand=True)
+taskbarlabel.place(x=777,y=23)
+
+
+
+exit_button = Label(mainroot, image=exit_photo,border=0)
+exit_button.place(x=828,y=29)
+
+min_label = Label(mainroot, image=min_btn,border=0)
+min_label.pack(fill=BOTH,expand=True)
+min_label.place(x=782,y=29)
+
+nev_label = Label(mainroot,textvariable=nev,font=("inter 26"),fg="#28611F")
+nev_label.place(x=244,y=38)
+
+
+
+
+
+#mainframe.bind("<B1-Motion>",move_app)
+
+nev_label.pack()
+
+
+if indulhat:
+    mainroot.mainloop()
