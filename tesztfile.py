@@ -164,24 +164,7 @@ import os
 
 #os.makedirs("teszt")
 
+import webbrowser
 
-from tkinter import *
-from tkinter import ttk
 
-# Create an instance of tkinter frame or window
-win = Tk()
-
-# Set the size of the window
-win.geometry("700x350")
-
-# Define a function to make the window above
-def lift_window():
-   win.lift()
-   win.after(10000, lift_window)
-
-# Add A label widget
-Label(win, text="Hey Folks, Welcome to TutorialsPoint✨", font=('Aerial 18 italic')).place(x=130, y=150)
-
-lift_window()
-
-win.mainloop()
+webbrowser.open("www.youtube.com")

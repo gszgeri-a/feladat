@@ -135,7 +135,7 @@ def login():
         cursor = conn.cursor()
         cursor.execute('SELECT * from users where felhasznalonev="%s" and jelszo="%s"' % (uname, pwd))
         if cursor.fetchone():
-            loginroot.quit()
+            loginroot.destroy()
             aktiv = uname
             print(f"Bejelentkeztél mint: {aktiv}")
         else:
@@ -317,3 +317,10 @@ set_appwindow()
 
 
 loginroot.mainloop()
+
+
+mainroot = Tk()
+
+mainroot.geometry("300x300")
+
+mainroot.mainloop()
