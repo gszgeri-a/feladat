@@ -159,7 +159,6 @@ def login():
         cursor.execute('SELECT * from users where felhasznalonev="%s" and jelszo="%s"' % (uname, pwd))
         if cursor.fetchone():
             aktiv = uname
-            nev.set(aktiv)
             loginroot.destroy()
             indulhat = True
             print(f"Bejelentkeztél mint: {aktiv}")
@@ -303,7 +302,7 @@ min_label.place(x=701,y=14)
 
 
 username = Entry(loginroot,justify='center',width=40,border=0,borderwidth=0)
-username.place(x=502,y=115)
+username.place(x=502,y=112)
 
 
 Label(loginroot, image=sep_line,border=0).place(x=502,y=130)
@@ -350,6 +349,13 @@ mainroot.overrideredirect(1)
 
 
 
+def close():
+    mainroot.destroy()
+
+def move_app(e):
+    mainroot.geometry(f'+{e.x_root}+{e.y_root}')
+
+
 app_width = 900
 app_height = 500
 screen_width = mainroot.winfo_screenwidth()
@@ -391,14 +397,18 @@ min_label = Label(mainroot, image=min_btn,border=0)
 min_label.pack(fill=BOTH,expand=True)
 min_label.place(x=782,y=29)
 
-nev_label = Label(mainroot,textvariable=nev,font=("inter 26"),fg="#28611F")
+
+
+
+
+nev_label = Entry(mainroot,font=("inter 26"),fg="#28611F",border=0,borderwidth=0)
 nev_label.place(x=244,y=38)
+nev_label.insert(0,f"{aktiv}")
 
 
+exit_button.bind("<Button>",lambda e:close())
 
-
-
-#mainframe.bind("<B1-Motion>",move_app)
+mainframe.bind("<B1-Motion>",move_app)
 
 nev_label.pack()
 
