@@ -389,6 +389,7 @@ crypt_photo = PhotoImage(file="cryptoimg.png")
 
 taskbarbg_img = PhotoImage(file="taskbarbg_main.png")
 
+close_photo = PhotoImage(file="close.png")
 exit_photo = PhotoImage(file='close_main.png')
 
 min_btn = PhotoImage(file="min_main.png")
@@ -519,7 +520,7 @@ def cryptO():
     cryptoroot.wm_attributes("-transparentcolor","grey")
     crypto_frame = Label(cryptoroot, border=0,bg="grey",image=crypto_frame_img)
     crypto_frame.pack(fill=BOTH,expand=True)
-    cls_btn = Label(cryptoroot,image=exit_photo,bg="#222338")
+    cls_btn = Label(cryptoroot,image=close_photo,bg="#222338")
     cls_btn.place(x=399,y=13)
     currecy_drop_down = ttk.Combobox(cryptoroot, width=6,textvariable=curr_option_var)
     currecy_drop_down.place(x=46,y=285)
