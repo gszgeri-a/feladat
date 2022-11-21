@@ -186,11 +186,104 @@ print(findata)
 """
 
 
-import tkinter as tk
+"""from tkinter import *
+from PIL import ImageTk
+root = Tk()
+root.title("root")
+app_width = 900
+app_height = 500
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+x = (screen_width / 2) - (app_width / 2)
+y = (screen_height / 2 ) - (app_height / 2)
 
-root = tk.Tk()
-test = tk.Label(root, text="Red", bg="red", fg="white")
-test.pack(ipadx=30, ipady=6)
-test = tk.Label(root, text="Purple",bd=0, bg="purple", fg="white")
-test.pack(ipadx=100, ipady=12)
-tk.mainloop()
+root.geometry(f'{app_width}x{app_height}+{int(x)}+{int(y)}')
+root.overrideredirect(1)
+
+bg = ImageTk.PhotoImage(file="mainfrom.png")
+
+
+
+mainframe = Label(root, border=0,bg="grey",image=bg)
+
+mainframe.pack(fill=BOTH,expand=True)
+
+text = tk.Text(root,font=("arial",30,"bold")).place(x=251,y=38)
+
+text.insert('END',"Geri")
+
+root.wm_attributes("-transparentcolor","gray")
+
+root.mainloop()"""
+
+"""from tkinter import *
+
+root = Tk()
+root.title('Codemy.com - Alpha Method')
+root.geometry("500x550")
+custom_photo = PhotoImage(file="customeimg.png")
+#root.attributes('-alpha', 0.5)
+root.wm_attributes('-transparentcolor', '#60b26c')
+
+my_frame = Frame(root, width=200, height=200, bg="#60b26c")
+my_frame.place(x=100,y=200)
+
+my_label = Entry(my_frame,border=0)
+my_label.place(x=0,y=0)
+
+
+root.mainloop()"""
+
+"""from tkinter import *
+
+root = Tk()
+c = Canvas()
+c.pack()
+
+
+
+# the image
+image = PhotoImage(file="mainfrom.png")
+
+c.create_image(900,500,image=image,anchor="nw")
+
+# and now the text at coordinates (50, 50)
+c.create_text(10, 10, text="whatever", fill="blue")
+
+root.mainloop()
+
+from tkinter import *
+import tkinterwidgets as tkw 
+
+root=Tk()
+
+
+
+
+trans_label=tkw.Label(root,text='tkinterwidgets Label',opacity=1)
+trans_label.pack()
+
+root.mainloop()
+
+import requests
+import json
+
+URL = requests.get("https://min-api.cryptocompare.com/data/price?fsym=DOGE&tsyms=HUF")
+data = URL.text
+
+findata = json.loads(data)
+
+print(findata['HUF'])
+
+"""
+import tkinter as tk
+from tkinter import ttk
+
+tkwindow = tk.Tk()
+
+cbox = ttk.Combobox(tkwindow, values=[1,2,3], state='readonly')
+cbox.grid(column=0, row=0)
+
+cbox.bind("<<ComboboxSelected>>", lambda _ : print("Selected!"))
+
+tkwindow.mainloop()

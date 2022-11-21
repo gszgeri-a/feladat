@@ -1,7 +1,8 @@
 from tkinter import * 
 from tkinter import ttk
 from ctypes import windll
-import pymysql
+from PIL import ImageTk,Image,ImageFont,ImageDraw
+import requests,json,os,sqlite3
 
 GWL_EXSTYLE = -20
 WS_EX_APPWINDOW = 0x00040000
@@ -16,7 +17,6 @@ def set_appwindow(fasz):
     res = windll.user32.SetWindowLongW(hwnd, GWL_EXSTYLE, stylew)
     fasz.wm_withdraw()
     fasz.after(10, lambda: fasz.wm_deiconify())
-
 
 
 
@@ -37,11 +37,6 @@ screen_height = loginroot.winfo_screenheight()
 x = (screen_width / 2) - (app_width / 2)
 y = (screen_height / 2 ) - (app_height / 2)
 loginroot.geometry(f'{app_width}x{app_height}+{int(x)}+{int(y)}')
-
-
-
-
-
 
 
 
@@ -82,7 +77,7 @@ exit_photo = PhotoImage(file='close.png')
 
 min_btn = PhotoImage(file="min.png")
 
-sign_button = PhotoImage(file="signbtnteszt.png")
+sign_button = PhotoImage(file="signbtn.png")
 
 sign_backbtn = PhotoImage(file="signback.png")
 
@@ -143,31 +138,28 @@ def invalid():
     
     
 def login():
-    global indulhat,nev_label
+    global indulhat,mainroot,felhasznalonev,jelszo
     indulhat = False
     uname = str(username.get())
     pwd = str(password.get())
     if uname == '' or pwd == '':
         emptyFunction(loginroot)
     else:
-        conn = pymysql.connect(host="sql7.freesqldatabase.com",
-                               user="sql7545459",
-                               passwd="1lEUskSrmn",
-                               database="sql7545459"
-                               )
+        conn = sqlite3.connect('database.db') 
         cursor = conn.cursor()
         cursor.execute('SELECT * from users where felhasznalonev="%s" and jelszo="%s"' % (uname, pwd))
         if cursor.fetchone():
+            felhasznalonev = uname
+            jelszo = pwd
             aktiv = uname
             loginroot.destroy()
             indulhat = True
+
             print(f"Bejelentkeztél mint: {aktiv}")
         else:
             invalid()
 
 def register():
-    
-    
     def succ():
         def geciszar():
             sucroot.destroy()
@@ -207,14 +199,10 @@ def register():
             emptyFunction(signroot)
             
         else:
-            conn = pymysql.connect(host="sql7.freesqldatabase.com",
-                                user="sql7545459",
-                                passwd="1lEUskSrmn",
-                                database="sql7545459"
-                                )
+            conn = sqlite3.connect('database.db') 
             with conn:
                 curs = conn.cursor()
-                adat = ("INSERT INTO users (felhasznalonev, jelszo) VALUES (%s, %s)")
+                adat = ("INSERT INTO users (felhasznalonev, jelszo) VALUES (?, ?)")
                 valtozok = (felhasz, jelszo)
                 curs.execute(adat, valtozok)
                 conn.commit()
@@ -330,6 +318,7 @@ frame_label.bind("<B1-Motion>",move_app)
 exit_button.bind("<Button>",lambda e:close())
 
 
+
 loginroot.bind("<Map>", frameMapped)
 
 
@@ -345,9 +334,183 @@ loginroot.mainloop()
 
 mainroot = Tk()
 mainroot.wm_attributes("-transparentcolor","gray")
+
 mainroot.overrideredirect(1)
 
 
+custframe_photo = PhotoImage(file="customframe.png")
+
+custom_btn_img = PhotoImage(file="custom_btn.png")
+
+custom_btn_back = PhotoImage(file="custom_btn_back.png")
+
+crypto_frame_img = PhotoImage(file="cryptbg.png")
+
+mainframe_photo = PhotoImage(file='mainfrom.png')
+
+custom_photo = PhotoImage(file="customeimg.png")
+
+inter_photo = PhotoImage(file="interimg.png")
+
+fold_photo = PhotoImage(file="folderimg.png")
+
+logout_photo = PhotoImage(file="logoutimg.png")
+
+shut_photo = PhotoImage(file="shutimg.png")
+
+crypt_photo = PhotoImage(file="cryptoimg.png")
+
+taskbarbg_img = PhotoImage(file="taskbarbg.png")
+
+exit_photo = PhotoImage(file='close.png')
+
+min_btn = PhotoImage(file="min.png")
+
+query_btn_img = PhotoImage(file="query_btn.png")
+
+name_place = Image.open("name.png")
+
+name_placer = ImageDraw.Draw(name_place)
+font_size = 26
+
+text_font = ImageFont.truetype("Inter-Bold.ttf",size=font_size)
+
+name_placer.text((135,0),f"{felhasznalonev.capitalize()}!",("#579033"),font=text_font)
+
+name_place.save("named.png")
+
+named_placed = PhotoImage(file="named.png")
+
+def customize():
+    def update():
+        update_username = str(custom_username_entry.get())
+        update_password = str(custom_pwd_entry.get())
+        if update_username == '' or update_password == '':
+            pass
+        else:
+            conn = sqlite3.connect('database.db') 
+            cursor = conn.cursor()
+            if update_username != felhasznalonev:
+                cursor.execute("UPDATE users SET felhasznalonev=? WHERE felhasznalonev=?",(update_username,felhasznalonev))
+            if update_password != jelszo:
+                cursor.execute("UPDATE users SET jelszo=? WHERE jelszo=?",(update_password,jelszo))
+            conn.commit()
+
+            
+    def show():
+        if custom_pwd_entry.cget("show") == "":
+            custom_pwd_entry.configure(show="*")
+        else:
+            custom_pwd_entry.configure(show="")
+    custroot = Toplevel(mainroot)
+    custroot.title("Custome")
+    app_width = 372
+    app_height = 382
+    screen_width = custroot.winfo_screenwidth()
+    screen_height = custroot.winfo_screenheight()
+    x = (screen_width / 2) - (app_width / 2)
+    y = (screen_height / 2 ) - (app_height / 2)
+    custroot.geometry(f'{app_width}x{app_height}+{int(x)}+{int(y)}')
+    
+    custroot.overrideredirect(1)
+    custroot.wm_attributes("-transparentcolor","grey")
+    custframe_label = Label(custroot, border=0,bg="grey",image=custframe_photo)
+    custframe_label.pack(fill=BOTH,expand=True)
+    custom_username_entry = Entry(custroot,justify='center',width=40,border=0,borderwidth=0)
+    custom_username_entry.place(x=66,y=120)
+    custom_pwd_entry = Entry(custroot,justify='center',show="*",width=40,border=0,borderwidth=0)
+    custom_pwd_entry.place(x=66,y=201)
+    
+    custom_username_entry.insert(0, felhasznalonev)
+    custom_pwd_entry.insert(0, jelszo)
+    showpwd = Checkbutton(custroot,bg="white",command=show)
+    showpwd.place(x=310,y=245)
+    edit_btn = Label(custroot,image=custom_btn_img,borderwidth=0)
+    edit_btn.place(x=76,y=279)
+    back_btn = Label(custroot,image=custom_btn_back,borderwidth=0)
+    back_btn.place(x=136,y=334)
+    back_btn.bind("<Button>", lambda e: custroot.destroy())
+    edit_btn.bind("<Button>",lambda e:update())
+    
+def ntw_reset():
+    try:
+        os.system('cmd /c'"ipconfig /release")
+        os.system('cmd /c'"ipconfig /renew")
+    except:
+        pass
+    
+def makedir():
+    try:
+        os.mkdir(f"{felhasznalonev} mappája")
+    except:
+        pass
+
+def shutDown():
+    os.system('cmd /c'"shutdown -s")
+
+def logOut():
+    os.system('cmd /c'"shutdown -l")
+
+def cryptO():
+    def reqCryptApi():
+        lib = {
+            "HUF" :"Ft",
+            "USD" : "$",
+            "EUR" : "€",
+            "JPY" : "¥",
+            "GBP" : "£"
+        }
+        currecy = str(currecy_drop_down.get())
+        crypt_currecy = str(crypt_currecy_drop_down.get())
+        if currecy != "" and crypt_currecy != "":
+            URL = requests.get(f"https://min-api.cryptocompare.com/data/price?fsym={crypt_currecy}&tsyms={currecy}")
+            data = URL.text
+
+            findata = json.loads(data)
+            current_price.config(text=f"{findata[currecy]} {lib[currecy]}")
+        
+
+    
+    style= ttk.Style()
+    style.theme_use('clam')
+    style.configure("TCombobox", fieldbackground= "#333453", background= "#333453",lightcolor="black")
+
+    curr_option_var = StringVar()
+    crpy_option_var = StringVar()
+    cryptoroot = Toplevel(mainroot)
+    cryptoroot.option_add("*TCombobox*Listbox*Background", "#3F4058")
+    cryptoroot.option_add("*TCombobox*Listbox*Foreground", "white")
+    cryptoroot.title("Custome")
+    app_width = 450
+    app_height = 450
+    screen_width = cryptoroot.winfo_screenwidth()
+    screen_height = cryptoroot.winfo_screenheight()
+    x = (screen_width / 2) - (app_width / 2)
+    y = (screen_height / 2 ) - (app_height / 2)
+    cryptoroot.geometry(f'{app_width}x{app_height}+{int(x)}+{int(y)}')
+    cryptoroot.overrideredirect(1)
+    cryptoroot.wm_attributes("-transparentcolor","grey")
+    crypto_frame = Label(cryptoroot, border=0,bg="grey",image=crypto_frame_img)
+    crypto_frame.pack(fill=BOTH,expand=True)
+    cls_btn = Label(cryptoroot,image=exit_photo,bg="#222338")
+    cls_btn.place(x=399,y=13)
+    currecy_drop_down = ttk.Combobox(cryptoroot, width=6,textvariable=curr_option_var)
+    currecy_drop_down.place(x=46,y=285)
+    currecy_drop_down['values'] = ('HUF','USD','EUR','JPY','GBP')
+    currecy_drop_down.current()
+
+    crypt_currecy_drop_down = ttk.Combobox(cryptoroot, width=6,textvariable=crpy_option_var)
+    crypt_currecy_drop_down.place(x=350,y=285)
+    crypt_currecy_drop_down['values'] = ('BTC','ETH','USDT','BUSD','DOGE')
+    crypt_currecy_drop_down.current(0)
+    current_price = Label(cryptoroot,bg="#222338",font=("inter, 18"),foreground="#585DBA")
+    current_price.place(x=150,y=280)
+        
+    query_btn = Label(cryptoroot,image=query_btn_img,border=0,borderwidth=0)
+    query_btn.place(x=135,y=350)
+    
+    query_btn.bind("<Button>",lambda e:reqCryptApi())
+    cls_btn.bind("<Button>",lambda e:cryptoroot.destroy())
 
 def close():
     mainroot.destroy()
@@ -364,19 +527,7 @@ x = (screen_width / 2) - (app_width / 2)
 y = (screen_height / 2 ) - (app_height / 2)
 mainroot.geometry(f'{app_width}x{app_height}+{int(x)}+{int(y)}')
 
-mainframe_photo = PhotoImage(file='mainfrom.png')
 
-
-
-#Label(mainroot,text="Welcome,",font=("inter 26")).place(x=113,y=38)
-
-
-taskbarbg_img = PhotoImage(file="taskbarbg.png")
-
-
-exit_photo = PhotoImage(file='close.png')
-
-min_btn = PhotoImage(file="min.png")
 
 mainframe = Label(mainroot, border=0,bg="grey",image=mainframe_photo)
 
@@ -385,9 +536,12 @@ mainframe.pack(fill=BOTH,expand=True)
 
 taskbarlabel = Label(mainroot, image=taskbarbg_img, bd=0)
 
-taskbarlabel.pack(fill=BOTH,expand=True)
 taskbarlabel.place(x=777,y=23)
 
+
+
+name_place_label = Label(mainroot,image=named_placed,borderwidth=0,border=0)
+name_place_label.place(x=115,y=38)
 
 
 exit_button = Label(mainroot, image=exit_photo,border=0)
@@ -398,20 +552,46 @@ min_label.pack(fill=BOTH,expand=True)
 min_label.place(x=782,y=29)
 
 
+custom_btn = Label(mainroot,image=custom_photo,border=0)
+custom_btn.place(x=152,y=119)
+
+network_btn = Label(mainroot,image=inter_photo,border=0)
+network_btn.place(x=351,y=119)
 
 
+fold_btn = Label(mainroot,image=fold_photo,border=0)
+fold_btn.place(x=550,y=119)
 
-nev_label = Entry(mainroot,font=("inter 26"),fg="#28611F",border=0,borderwidth=0)
-nev_label.place(x=244,y=38)
-nev_label.insert(0,f"{aktiv}")
+#második sor
 
+logout_btn = Label(mainroot,image=logout_photo,border=0)
+logout_btn.place(x=152,y=270)
+
+
+shut_btn = Label(mainroot,image=shut_photo,border=0)
+shut_btn.place(x=351,y=270)
+
+crypt_btn = Label(mainroot,image=crypt_photo,border=0)
+crypt_btn.place(x=550,y=270)
 
 exit_button.bind("<Button>",lambda e:close())
 
-mainframe.bind("<B1-Motion>",move_app)
 
-nev_label.pack()
+custom_btn.bind("<Button>",lambda fd: customize())
 
+network_btn.bind("<Button>",lambda fd:ntw_reset())
 
-if indulhat:
-    mainroot.mainloop()
+fold_btn.bind("<Button>",lambda fd:makedir())
+
+logout_btn.bind("<Button>",lambda fd:logOut())
+
+shut_btn.bind("<Button>",lambda fd:shutDown())
+
+crypt_btn.bind("<Button>",lambda fd:cryptO())
+
+try:
+    if indulhat:
+
+        mainroot.mainloop()
+except:
+    pass
