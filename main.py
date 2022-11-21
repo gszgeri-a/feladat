@@ -4,6 +4,8 @@ from ctypes import windll
 from PIL import ImageTk,Image,ImageFont,ImageDraw
 import requests,json,os,sqlite3
 
+
+
 GWL_EXSTYLE = -20
 WS_EX_APPWINDOW = 0x00040000
 WS_EX_TOOLWINDOW = 0x00000080
@@ -21,6 +23,7 @@ def set_appwindow(fasz):
 
 
 loginroot = Tk()
+loginroot.iconbitmap("logo.ico")
 aktiv = None
 loginroot.title("Login")
 z = 0
@@ -332,10 +335,34 @@ loginroot.mainloop()
 
 
 
+
+
+
 mainroot = Tk()
 mainroot.wm_attributes("-transparentcolor","gray")
-
+mainroot.iconbitmap("logo.ico")
+g = 0
 mainroot.overrideredirect(1)
+
+mainroot.after(10, lambda: set_appwindow(mainroot))
+def minimizeGUI1():
+    global g
+    mainroot.state('withdrawn')
+    mainroot.overrideredirect(False)
+    mainroot.state('iconic')
+    g = 1
+
+def frameMapped1(event=None):
+    global g
+    mainroot.overrideredirect(True)
+    if g == 1:
+        set_appwindow(mainroot)
+        g = 0
+
+mainroot.bind("<Map>", frameMapped1)
+
+
+
 
 
 custframe_photo = PhotoImage(file="customframe.png")
@@ -360,11 +387,11 @@ shut_photo = PhotoImage(file="shutimg.png")
 
 crypt_photo = PhotoImage(file="cryptoimg.png")
 
-taskbarbg_img = PhotoImage(file="taskbarbg.png")
+taskbarbg_img = PhotoImage(file="taskbarbg_main.png")
 
-exit_photo = PhotoImage(file='close.png')
+exit_photo = PhotoImage(file='close_main.png')
 
-min_btn = PhotoImage(file="min.png")
+min_btn = PhotoImage(file="min_main.png")
 
 query_btn_img = PhotoImage(file="query_btn.png")
 
@@ -515,8 +542,6 @@ def cryptO():
 def close():
     mainroot.destroy()
 
-def move_app(e):
-    mainroot.geometry(f'+{e.x_root}+{e.y_root}')
 
 
 app_width = 900
@@ -550,6 +575,8 @@ exit_button.place(x=828,y=29)
 min_label = Label(mainroot, image=min_btn,border=0)
 min_label.pack(fill=BOTH,expand=True)
 min_label.place(x=782,y=29)
+
+min_label.bind("<Button>",lambda e: minimizeGUI1())
 
 
 custom_btn = Label(mainroot,image=custom_photo,border=0)
